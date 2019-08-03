@@ -23,8 +23,7 @@ public class BackMessageConsumer implements MessageListener {
         } catch (Exception e) {
             e.printStackTrace();
             // 记录日志人工干预
-            System.out.println("日志");
-            System.out.println("日志");
+            System.out.println("为什么没有日志");
         }
     }
 }
