@@ -39,7 +39,7 @@ public class CartServiceImpl implements CartService {
     }
 
     /**
-     * 添加商品到购物车及删除
+     * 添加商品到购物车及删除商品
      * @param username
      * @param skuId
      * @param num
@@ -87,6 +87,7 @@ public class CartServiceImpl implements CartService {
             }
 
             if (num <= 0){
+                System.out.println("商品数量不合法");
                 throw new RuntimeException("商品数量不合法");
             }
 
