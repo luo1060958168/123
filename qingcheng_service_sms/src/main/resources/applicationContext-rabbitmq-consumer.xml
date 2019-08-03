@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                          http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--配置包扫描-->
+    <context:component-scan base-package="com.qingcheng"></context:component-scan>
+    <!--连接工厂-->
+    <rabbit:connection-factory id="connectionFactory" host="127.0.0.1" username="guest" password="guest" port="5672"></rabbit:connection-factory>
+
+    <!--创建消息队列-->
+    <rabbit:queue name="queue.sms"></rabbit:queue>
+
+    <!--消费者监听类-->
+    <bean id="smsMessageConsumer" class="com.qingcheng.consumer.SmsMessageConsumer"></bean>
+
+    <!--设置监听容器-->
+    <rabbit:listener-container connection-factory="connectionFactory">
+        <rabbit:listener ref="smsMessageConsumer" queue-names="queue.sms"></rabbit:listener>
+    </rabbit:listener-container>
+</beans>

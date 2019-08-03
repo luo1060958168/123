@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>商品类目统计</title>
+
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../plugins/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div id="app">
+
+        <el-date-picker
+                v-model="dateRange"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                @change="fetchData()">
+        </el-date-picker>
+
+        <div id="main" style="width: 600px;height:400px;">
+
+        </div>
+        <template>
+            <el-table
+                    :data="tableData"
+                    stripe
+                    style="width: 100%">
+                <el-table-column
+                        prop="categoryName"
+                        label="分类名称"
+                        width="200">
+                </el-table-column>
+                <el-table-column
+                        prop="num"
+                        label="销量"
+                        width="200">
+                </el-table-column>
+                <el-table-column
+                        label="销量百分比"
+                        width="200">
+                    <template slot-scope="scope">
+                        {{(scope.row.num/totalNum*100).toFixed(2)}}%
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        prop="money"
+                        label="销售额"
+                        width="200">
+                </el-table-column>
+                <el-table-column
+                        label="销售额百分比"
+                        width="200">
+                    <template slot-scope="scope">
+                      {{(scope.row.money/totalMoney*100).toFixed(2)}}%
+                    </template>
+                </el-table-column>
+            </el-table>
+            </template>
+    </div>
+
+</body>
+
+<script src="/js/util.js"></script>
+<script src="/js/vue.js"></script>
+<script src="/js/axios.js"></script>
+<script src="/js/elementui.js"></script>
+<script src="/js/echarts.common.min.js"></script>
+
+<script>
+    new Vue({
+        el:"#app",
+        data:{
+            tableData:[],
+            dateRange:[],
+            totalNum:0,
+            totalMoney:0
+        },
+        methods:{
+            fetchData(){
+                let date1 = this.dateRange[0].Format('yyyy-MM-dd');
+                let date2 = this.dateRange[1].Format('yyyy-MM-dd');
+                axios.get(`/categoryReport/category1Count.do?date1=${date1}&date2=${date2}`).then(response => {
+                    this.tableData=response.data;
+                    //计算总金额和总销量
+                    this.totalNum=0;
+                    this.totalMoney=0;
+
+                    // 图形数据
+                    let legendData=[];//图列数据
+                    let numData=[];// 销量数据
+                    let moneyData=[];// 销售额数据
+
+                    for (let i=0;i<this.tableData.length;i++){
+                        this.totalNum+=this.tableData[i].num;
+                        this.totalMoney+=this.tableData[i].money;
+                        legendData.push(this.tableData[i].categoryName);
+                        numData.push({name:this.tableData[i].categoryName,value:this.tableData[i].num});
+                        moneyData.push({name:this.tableData[i].categoryName,value:this.tableData[i].money});
+                    }
+
+                    // 基于准备好的dom，初始化echarts实例
+                    let myChart = echarts.init(document.getElementById('main'));
+
+                    // 指定图表的配置项和数据
+                    let option = {
+                        title : {
+                            text: '一级商品分类',
+                            subtext: '销售分析',
+                            x:'center'
+                        },
+                        tooltip : {
+                            trigger: 'item',
+                            formatter: "{a} <br/>{b} : {c} ({d}%)"
+                        },
+                        legend: {
+                            orient: 'vertical',
+                            left: 'left',
+                            data: legendData
+                        },
+                        series : [
+                            {
+                                name: '销量',
+                                type: 'pie',
+                                radius : '35%',
+                                center: ['30%', '50%'],
+                                data:numData,
+                                itemStyle: {
+                                    emphasis: {
+                                        shadowBlur: 10,
+                                        shadowOffsetX: 0,
+                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                    }
+                                },
+
+                            },
+                            {
+                                name: '销售额',
+                                type: 'pie',
+                                radius : '35%',
+                                center: ['70%', '50%'],
+                                data:moneyData,
+                                itemStyle: {
+                                    emphasis: {
+                                        shadowBlur: 10,
+                                        shadowOffsetX: 0,
+                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                    }
+                                },
+
+                            }
+                        ]
+                    };
+
+                    // 使用刚指定的配置项和数据显示图表。
+                    myChart.setOption(option);
+
+                })
+            }
+        }
+    })
+
+</script>
+
+
+</html>

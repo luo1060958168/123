@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <!--页面拦截规则-->
+    <security:http pattern="/css/**" security="none"></security:http>
+    <security:http pattern="/img/**" security="none"></security:http>
+    <security:http pattern="/js/**" security="none"></security:http>
+    <security:http pattern="/plugins/**" security="none"></security:http>
+    <security:http pattern="/login.html" security="none"></security:http>
+    <security:http pattern="/*.ico" security="none"></security:http>
+    <security:http pattern="/admin/add.do" security="none"></security:http>
+
+    <security:http>
+        <security:intercept-url pattern="/**" access="hasRole('ROLE_ADMIN')"></security:intercept-url>
+        <security:form-login login-page="/login.html" default-target-url="/main.html" authentication-failure-url="/login.html" authentication-success-handler-ref="authenticationSuccessHandler"></security:form-login>
+        <!--退出-->
+        <security:logout/>
+        <!--关闭csrf验证，跨站请求伪造-->
+        <security:csrf disabled="true"></security:csrf>
+        <!--同源策略-->
+        <security:headers>
+            <security:frame-options policy="SAMEORIGIN"></security:frame-options>
+        </security:headers>
+    </security:http>
+
+    <!--认证管理-->
+    <security:authentication-manager>
+        <security:authentication-provider user-service-ref="userDetailsService">
+            <security:password-encoder ref="bcryptEncoder"></security:password-encoder>
+        </security:authentication-provider>
+    </security:authentication-manager>
+
+    <bean id="bcryptEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></bean>
+    <bean id="userDetailsService" class="com.qingcheng.controller.UserDetailsServiceImpl"></bean>
+    <bean id="authenticationSuccessHandler" class="com.qingcheng.controller.AuthenticationSuccessHandlerImpl"></bean>
+</beans>

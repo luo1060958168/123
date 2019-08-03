@@ -1,0 +1,5 @@
+<root>
+    <item name='org.elasticsearch.search.SearchHits long getTotalHits()'>
+        <annotation name='java.lang.Deprecated'/>
+    </item>
+</root>

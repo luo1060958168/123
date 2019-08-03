@@ -1,0 +1,5 @@
+<root>
+    <item name='org.elasticsearch.search.builder.SearchSourceBuilder org.elasticsearch.search.builder.SearchSourceBuilder query(org.elasticsearch.index.query.QueryBuilder)'>
+        <annotation name='java.lang.Deprecated'/>
+    </item>
+</root>
