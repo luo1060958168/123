@@ -25,6 +25,7 @@
         <module>qingcheng_web_center</module>
         <module>qingcheng_service_seckill</module>
         <module>qingcheng_web_seckill</module>
+        <module>qingcheng_service_config</module>
     </modules>
 
     <packaging>pom</packaging>
